@@ -29,6 +29,7 @@ https://blog.csdn.net/liangyihuai/article/details/79140481
 (2)python3  recognize.py
 
 3. PyQt的使用
+
   使用教程 http://code.py40.com/pyqt5/32.html
 
 
