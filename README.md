@@ -22,6 +22,7 @@ cifar10_eval.py	    评估CIFAR-10模型的预测性能。
 下载imagenet2012数据集 https://www.cnblogs.com/zjutzz/p/6083201.html
 tensorflow-resnet模型： https://github.com/ry/tensorflow-resnet
 其它参考：https://github.com/xvshu/ImageNet-Api  
+使用：  python3  recognize.py
 
 3. PyQt的使用
   使用教程 http://code.py40.com/pyqt5/32.html
