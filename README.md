@@ -24,7 +24,9 @@ tensorflow-resnet模型： https://github.com/ry/tensorflow-resnet
 其它参考：https://github.com/xvshu/ImageNet-Api  
 https://github.com/liangyihuai/my_tensorflow/tree/master/com/huai/converlution/resnets
 https://blog.csdn.net/liangyihuai/article/details/79140481
-使用：  python3  recognize.py
+使用：  
+(1)python3  train.py
+(2)python3  recognize.py
 
 3. PyQt的使用
   使用教程 http://code.py40.com/pyqt5/32.html
