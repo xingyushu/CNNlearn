@@ -1,16 +1,4 @@
-# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+
 # ==============================================================================
 
 """Builds the CIFAR-10 network.
@@ -210,6 +198,12 @@ def inference(images):
     pre_activation = tf.nn.bias_add(conv, biases)
     conv1 = tf.nn.relu(pre_activation, name=scope.name)
     _activation_summary(conv1)
+  """第一层卷积是由64个5×5的卷积核组成，步长为1，padding为SAME使得卷积之后的图片输入和输出的大小保持一致。
+  将卷积之后的结果加上偏置，然后在通过RELU激活函数，再经过最大池化，需要注意的是采用的是池化的核为3×3，
+  步长为2×2，池化的尺寸和步长不一致目的是为了增加数据的丰富性。最后再经过Lrn层，LRN层模仿了生物神经系
+  统的“侧抑制”机制，对于局部神经元的活动创建竞争环境，使得其中响应较大的值变得更大，并抑制反馈较小的神经元，
+  提高了模型的泛化能力。Relu激活函数是没有边界的，所以lrn层对于没有边界的激活函数会比较有用，它会从多个卷积
+  核的响应中挑选比较大的反馈。对于有固定边界且能抑制过大值的激活函数sigmoid不太适应。"""
 
   # pool1
   pool1 = tf.nn.max_pool(conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
@@ -219,6 +213,12 @@ def inference(images):
                     name='norm1')
    '''提出了LRN层，对局部神经元的活动创建竞争机制，使得其中响应比较大的值变得相对更大，并抑制其他反馈较小的神经元，
    增强了模型的泛化能力。'''
+   
+   
+   
+   #第二层卷积与第一层卷积的总体结构相差不大，相对于第一层卷积，第二层将lrn层和最大池化层的顺序进行了调换，先通过lrn层之后，再使用最大池化。
+
+
   # conv2
   with tf.variable_scope('conv2') as scope:
     kernel = _variable_with_weight_decay('weights',
@@ -238,6 +238,9 @@ def inference(images):
   pool2 = tf.nn.max_pool(norm2, ksize=[1, 3, 3, 1],
                          strides=[1, 2, 2, 1], padding='SAME', name='pool2')
 
+  
+  """在进行全连接操作之前，需要先将卷积后的图片进行flatten，将图片变成一个行向量，一行代表一张图片，所
+  有有bath_size行。在这一层全连接中对权重使用L2正则化，正则化的系数为0.004。通过relu激活函数之后输出一个384维的向量。"""
   # local3
   with tf.variable_scope('local3') as scope:
     # Move everything into depth so we can perform a single matrix multiply.
@@ -249,6 +252,7 @@ def inference(images):
     local3 = tf.nn.relu(tf.matmul(reshape, weights) + biases, name=scope.name)
     _activation_summary(local3)
 
+    """这一层全连接层和上一层差不多，将输入的384维向量变成了192维向量的输出，也使用了L2正则化。"""
   # local4
   with tf.variable_scope('local4') as scope:
     weights = _variable_with_weight_decay('weights', shape=[384, 192],
