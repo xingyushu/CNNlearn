@@ -23,13 +23,32 @@ cifar10_eval.py	    评估CIFAR-10模型的预测性能。
 ![cifar10 model](https://github.com/xingyushu/CNNlearn/blob/master/img-folder/res.jpg)
 
 下载imagenet2012数据集 https://www.cnblogs.com/zjutzz/p/6083201.html
+
 tensorflow-resnet模型： https://github.com/ry/tensorflow-resnet
+
+
 其它参考：https://github.com/xvshu/ImageNet-Api  
+
 https://github.com/liangyihuai/my_tensorflow/tree/master/com/huai/converlution/resnets
+
 https://blog.csdn.net/liangyihuai/article/details/79140481
+
 使用：  
 (1)python3  train.py
 (2)python3  recognize.py
+
+使用了Tensorflow，可识别物体量从10类增加到1001类，可为：狗熊 椅子 汽车 键盘 箱子 婴儿床 旗杆iPod播放器 轮船 面包车 项链 降落伞 桌子 钱包 球拍 步枪等等接着导入ResNet50网络模型进行处理，主要图像数据处理函数如下：
+
+image.img_to_array：将PIL格式的图像转换为numpy数组。
+
+np.expand_dims：将我们的(3，224，224)大小的图像转换为(1，3，224，224)。因为model.predict函数需要4维数组作为输入，其中第4维为每批预测图像的数量。这也就是说，我们可以一次性分类多个图像。
+
+preprocess_input：使用训练数据集中的平均通道值对图像数据进行零值处理，即使得图像所有点的和为0。这是非常重要的步骤，如果跳过，将大大影响实际预测效果。这个步骤称为数据归一化。
+
+model.predict：对我们的数据分批处理并返回预测值。
+decode_predictions：采用与model.predict函数相同的编码标签，并从ImageNet ILSVRC集返回可读的标签。
+然后通过调用官方api，得到了这个classfier，可以读取同目录下images文件夹里的指定命名的图片，这个分类器在我的笔记本tensorflow中训练差不多需要两个小时的时间，训练好之后实际识别的速率快达1~2分钟一张图，准确率高达90%以上
+
 
 3. PyQt的使用
 
