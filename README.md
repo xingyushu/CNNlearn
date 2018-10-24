@@ -27,6 +27,21 @@ cifar10_eval.py	    评估CIFAR-10模型的预测性能。
 2. Resnet网络的构建和使用
 ![cifar10 model](https://github.com/xingyushu/CNNlearn/blob/master/img-folder/res.jpg)
 
+下面将要实现的是resnet-50。下面是网络模型的整体模型图。其中的CONV表示卷积层，Batch Norm表示Batch 归一化层，ID BLOCK表示Identity块，由多个层构成，具体见第二个图。Conv BLOCK表示卷积块，由多个层构成。为了使得model个结构更加清晰，才提取出了conv block 和id block两个‘块’，分别把它们封装成函数。
+
+![cifar10 model](https://github.com/xingyushu/CNNlearn/blob/master/img-folder/res2.jpg)
+
+上图表示Resnet-50的整体结构图
+
+![cifar10 model](https://github.com/xingyushu/CNNlearn/blob/master/img-folder/res3.jpg)
+
+上图表示ID block
+
+![cifar10 model](https://github.com/xingyushu/CNNlearn/blob/master/img-folder/res4.jpg)
+
+上图表示conv block
+
+
 下载imagenet2012数据集 
 http://www.image-net.org/challenges/LSVRC/2012/nnoupb/ILSVRC2012_img_test.tar
 
