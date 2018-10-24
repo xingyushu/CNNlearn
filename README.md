@@ -20,6 +20,8 @@ cifar10_eval.py	    评估CIFAR-10模型的预测性能。
  图片格式：https://pan.baidu.com/s/1skN4jW5   z6i3
  
 2. Resnet网络的构建和使用
+![cifar10 model](https://github.com/xingyushu/CNNlearn/blob/master/img-folder/res.jpg)
+
 下载imagenet2012数据集 https://www.cnblogs.com/zjutzz/p/6083201.html
 tensorflow-resnet模型： https://github.com/ry/tensorflow-resnet
 其它参考：https://github.com/xvshu/ImageNet-Api  
