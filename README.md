@@ -4,8 +4,12 @@
 1. 利用tensorflow对CIFAR-10 数据集的分类，包含数据集处理，训练，生成模型和测试
 (1)配置好python+tensorflow即可
   可以使用下列命令获取源码
-git clone https://github.com/tensorflow/models.git
+  <pre><code>git clone https://github.com/tensorflow/models.git
+  
 cd models/tutorials/image/cifar10
+
+</code></pre>
+
 
 cifar10_input.py	读取本地CIFAR-10的二进制文件格式的内容。
 cifar10.py	        建立CIFAR-10的模型。
@@ -34,8 +38,12 @@ https://github.com/liangyihuai/my_tensorflow/tree/master/com/huai/converlution/r
 https://blog.csdn.net/liangyihuai/article/details/79140481
 
 使用：  
-(1)python3  train.py
-(2)python3  recognize.py
+<pre><code>(1)python3  train.py  训练生成模型
+
+(2)python3  recognize.py   打开界面
+
+</code></pre>
+
 
 使用了Tensorflow，可识别物体量从10类增加到1001类，可为：狗熊 椅子 汽车 键盘 箱子 婴儿床 旗杆iPod播放器 轮船 面包车 项链 降落伞 桌子 钱包 球拍 步枪等等接着导入ResNet50网络模型进行处理，主要图像数据处理函数如下：
 
@@ -54,9 +62,6 @@ decode_predictions：采用与model.predict函数相同的编码标签，并从I
 
   使用教程 http://code.py40.com/pyqt5/32.html
 
-<pre><code>这是一个代码区块。
-
-</code></pre>
 
 
 
