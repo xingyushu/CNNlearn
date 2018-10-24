@@ -1,24 +1,5 @@
+#coding:utf-8
 
-# ==============================================================================
-
-"""Builds the CIFAR-10 network.
-
-Summary of available functions:
-
- # Compute input images and labels for training. If you would like to run
- # evaluations, use inputs() instead.
- inputs, labels = distorted_inputs()
-
- # Compute inference on the model inputs to make a prediction.
- predictions = inference(inputs)
-
- # Compute the total loss of the prediction with respect to the labels.
- loss = loss(predictions, labels)
-
- # Create a graph to run one step of training with respect to the loss.
- train_op = train(loss, global_step)
-"""
-# pylint: disable=missing-docstring
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -56,9 +37,7 @@ NUM_EPOCHS_PER_DECAY = 350.0      # Epochs after which learning rate decays.
 LEARNING_RATE_DECAY_FACTOR = 0.1  # Learning rate decay factor.
 INITIAL_LEARNING_RATE = 0.1       # Initial learning rate.
 
-# If a model is trained with multiple GPUs, prefix all Op names with tower_name
-# to differentiate the operations. Note that this prefix is removed from the
-# names of the summaries when visualizing a model.
+
 TOWER_NAME = 'tower'
 
 DATA_URL = 'https://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz'
@@ -101,21 +80,7 @@ def _variable_on_cpu(name, shape, initializer):
 
 
 def _variable_with_weight_decay(name, shape, stddev, wd):
-  """Helper to create an initialized Variable with weight decay.
 
-  Note that the Variable is initialized with a truncated normal distribution.
-  A weight decay is added only if one is specified.
-
-  Args:
-    name: name of the variable
-    shape: list of ints
-    stddev: standard deviation of a truncated Gaussian
-    wd: add L2Loss weight decay multiplied by this float. If None, weight
-        decay is not added for this Variable.
-
-  Returns:
-    Variable Tensor
-  """
   dtype = tf.float16 if FLAGS.use_fp16 else tf.float32
   var = _variable_on_cpu(
       name,
@@ -149,18 +114,7 @@ def distorted_inputs():
 
 
 def inputs(eval_data):
-  """Construct input for CIFAR evaluation using the Reader ops.
-
-  Args:
-    eval_data: bool, indicating if one should use the train or eval data set.
-
-  Returns:
-    images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 3] size.
-    labels: Labels. 1D tensor of [batch_size] size.
-
-  Raises:
-    ValueError: If no data_dir
-  """
+  
   if not FLAGS.data_dir:
     raise ValueError('Please supply a data_dir')
   data_dir = os.path.join(FLAGS.data_dir, 'cifar-10-batches-bin')
@@ -182,12 +136,16 @@ def inference(images):
   Returns:
     Logits.
   """
-  # We instantiate all variables using tf.get_variable() instead of
-  # tf.Variable() in order to share variables across multiple GPU training runs.
-  # If we only ran this model on a single GPU, we could simplify this function
-  # by replacing all instances of tf.get_variable() with tf.Variable().
-  #
+
   # conv1
+
+  """第一层卷积是由64个5×5的卷积核组成，步长为1，padding为SAME使得卷积之后的图片输入和输出的大小保持
+一致。将卷积之后的结果加上偏置，然后在通过RELU激活函数，再经过最大池化，需要注意的是采用的是池化的核为3×3，
+步长为2×2，池化的尺寸和步长不一致目的是为了增加数据的丰富性。最后再经过Lrn层，LRN层模仿了生物神经系统的
+“侧抑制”机制，对于局部神经元的活动创建竞争环境，使得其中响应较大的值变得更大，并抑制反馈较小的神经元，
+提高了模型的泛化能力。Relu激活函数是没有边界的，所以lrn层对于没有边界的激活函数会比较有用，它会从多个
+卷积核的响应中挑选比较大的反馈。"""
+
   with tf.variable_scope('conv1') as scope:
     kernel = _variable_with_weight_decay('weights',
                                          shape=[5, 5, 3, 64],
@@ -198,28 +156,24 @@ def inference(images):
     pre_activation = tf.nn.bias_add(conv, biases)
     conv1 = tf.nn.relu(pre_activation, name=scope.name)
     _activation_summary(conv1)
-  """第一层卷积是由64个5×5的卷积核组成，步长为1，padding为SAME使得卷积之后的图片输入和输出的大小保持一致。
-  将卷积之后的结果加上偏置，然后在通过RELU激活函数，再经过最大池化，需要注意的是采用的是池化的核为3×3，
-  步长为2×2，池化的尺寸和步长不一致目的是为了增加数据的丰富性。最后再经过Lrn层，LRN层模仿了生物神经系
-  统的“侧抑制”机制，对于局部神经元的活动创建竞争环境，使得其中响应较大的值变得更大，并抑制反馈较小的神经元，
-  提高了模型的泛化能力。Relu激活函数是没有边界的，所以lrn层对于没有边界的激活函数会比较有用，它会从多个卷积
-  核的响应中挑选比较大的反馈。对于有固定边界且能抑制过大值的激活函数sigmoid不太适应。"""
 
   # pool1
   pool1 = tf.nn.max_pool(conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
                          padding='SAME', name='pool1')
+
   # norm1
   norm1 = tf.nn.lrn(pool1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
                     name='norm1')
    '''提出了LRN层，对局部神经元的活动创建竞争机制，使得其中响应比较大的值变得相对更大，并抑制其他反馈较小的神经元，
    增强了模型的泛化能力。'''
-   
-   
-   
-   #第二层卷积与第一层卷积的总体结构相差不大，相对于第一层卷积，第二层将lrn层和最大池化层的顺序进行了调换，先通过lrn层之后，再使用最大池化。
+
 
 
   # conv2
+
+  """第二层卷积与第一层卷积的总体结构相差不大，相对于第一层卷积，
+  第二层将lrn层和最大池化层的顺序进行了调换，先通过lrn层之后，再使用最大池化。"""
+
   with tf.variable_scope('conv2') as scope:
     kernel = _variable_with_weight_decay('weights',
                                          shape=[5, 5, 64, 64],
@@ -238,10 +192,14 @@ def inference(images):
   pool2 = tf.nn.max_pool(norm2, ksize=[1, 3, 3, 1],
                          strides=[1, 2, 2, 1], padding='SAME', name='pool2')
 
-  
-  """在进行全连接操作之前，需要先将卷积后的图片进行flatten，将图片变成一个行向量，一行代表一张图片，所
-  有有bath_size行。在这一层全连接中对权重使用L2正则化，正则化的系数为0.004。通过relu激活函数之后输出一个384维的向量。"""
+
+
   # local3
+
+  """在进行全连接操作之前，需要先将卷积后的图片进行flatten，将图片变成一个行向量，一行代表一张图片，
+  所有有bath_size行。在这一层全连接中对权重使用L2正则化，正则化的系数为0.004。通过relu激活函数之后
+  输出一个384维的向量。"""
+
   with tf.variable_scope('local3') as scope:
     # Move everything into depth so we can perform a single matrix multiply.
     reshape = tf.reshape(pool2, [images.get_shape().as_list()[0], -1])
@@ -252,8 +210,9 @@ def inference(images):
     local3 = tf.nn.relu(tf.matmul(reshape, weights) + biases, name=scope.name)
     _activation_summary(local3)
 
-    """这一层全连接层和上一层差不多，将输入的384维向量变成了192维向量的输出，也使用了L2正则化。"""
   # local4
+  """这一层全连接层和上一层差不多，将输入的384维向量变成了192维向量的输出，也使用了L2正则化。"""
+
   with tf.variable_scope('local4') as scope:
     weights = _variable_with_weight_decay('weights', shape=[384, 192],
                                           stddev=0.04, wd=0.004)
@@ -261,10 +220,9 @@ def inference(images):
     local4 = tf.nn.relu(tf.matmul(local3, weights) + biases, name=scope.name)
     _activation_summary(local4)
 
-  # linear layer(WX + b),
-  # We don't apply softmax here because
-  # tf.nn.sparse_softmax_cross_entropy_with_logits accepts the unscaled logits
-  # and performs the softmax internally for efficiency.
+
+"""这一层将192维的向量转变为10维向量的输出，代表着十个不同种类的图片"""
+
   with tf.variable_scope('softmax_linear') as scope:
     weights = _variable_with_weight_decay('weights', [192, NUM_CLASSES],
                                           stddev=1/192.0, wd=None)
@@ -277,19 +235,13 @@ def inference(images):
 
 #softmax直白来说就是将原来输出是3,1,-3通过softmax函数一作用，就映射成为(0,1)的值，而这些值的累和为1（满足概率的性质），
 #那么我们就可以将它理解成概率，在最后选取输出结点的时候，我们就可以选取概率最大（也就是值对应最大的）结点，作为我们的预测目标！
+
+
+"""使用交叉熵作为损失函数，在这里我们通过sparse_softmax_cross_entropy_with_logits
+来实现softmax和交叉熵的计算。最后还需要加上之前的权重的损失作为最后总的损失函数进行优化。"""
+
 def loss(logits, labels):
-  """Add L2Loss to all the trainable variables.
-
-  Add summary for "Loss" and "Loss/avg".
-  Args:
-    logits: Logits from inference().
-    labels: Labels from distorted_inputs or inputs(). 1-D tensor
-            of shape [batch_size]
-
-  Returns:
-    Loss tensor of type float.
-  """
-  # Calculate the average cross entropy loss across the batch.
+ 
   labels = tf.cast(labels, tf.int64)
   cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
       labels=labels, logits=logits, name='cross_entropy_per_example')
@@ -302,16 +254,7 @@ def loss(logits, labels):
 
 
 def _add_loss_summaries(total_loss):
-  """Add summaries for losses in CIFAR-10 model.
 
-  Generates moving average for all losses and associated summaries for
-  visualizing the performance of the network.
-
-  Args:
-    total_loss: Total loss from loss().
-  Returns:
-    loss_averages_op: op for generating moving averages of losses.
-  """
   # Compute the moving average of all individual losses and the total loss.
   loss_averages = tf.train.ExponentialMovingAverage(0.9, name='avg')
   losses = tf.get_collection('losses')
