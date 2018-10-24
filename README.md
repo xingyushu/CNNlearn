@@ -54,7 +54,9 @@ decode_predictions：采用与model.predict函数相同的编码标签，并从I
 
   使用教程 http://code.py40.com/pyqt5/32.html
 
+<pre><code>这是一个代码区块。
 
+</code></pre>
 
 
 
