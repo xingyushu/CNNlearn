@@ -2,6 +2,7 @@
 基于经典cnn结构构建的图片分类系统_人工智能 与机器学习课堂作业
 主要做了两项工作
 1. 利用tensorflow对CIFAR-10 数据集的分类，包含数据集处理，训练，生成模型和测试
+
 (1)配置好python+tensorflow即可
   可以使用下列命令获取源码
   <pre><code>git clone https://github.com/tensorflow/models.git
