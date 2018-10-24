@@ -18,7 +18,7 @@ cifar10_train.py	在CPU或GPU上训练CIFAR-10的模型。
 cifar10_multi_gpu_train.py	在多GPU上训练CIFAR-10的模型。
 cifar10_eval.py	    评估CIFAR-10模型的预测性能。
 具体操作 可以参考链接查看中文版的介绍  http://www.tensorfly.cn/tfdoc/tutorials/deep_cnn.html
-![cifar10 model](https://github.com/xingyushu/CNNlearn/blob/master/img-folder/cifar_graph.jpg)
+<div align=center>![cifar10 model](https://github.com/xingyushu/CNNlearn/blob/master/img-folder/cifar_graph.jpg)</div>
 
 (2)下载数据集：
  binary格式：http://www.cs.toronto.edu/~kriz/cifar.html
